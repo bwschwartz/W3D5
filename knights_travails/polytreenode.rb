@@ -1,13 +1,13 @@
-require 'byebug'
 class PolyTreeNode
 
     attr_reader :parent, :children, :value
-    attr_writer :children
+    attr_writer :children, :root_node
 
     def initialize(value)
         @parent = nil
         @children = []
         @value = value
+        @root_node = nil
     end
 
     def parent=(node)
