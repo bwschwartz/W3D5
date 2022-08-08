@@ -26,7 +26,7 @@ class KnightPathFinder
 
   def self.get_path(curr_node)
     path = []
-    while curr_node.parent 
+    while curr_node.parent
       path << curr_node.parent.value
       curr_node = curr_node.parent
     end
@@ -34,44 +34,42 @@ class KnightPathFinder
 
   end
 
-
-  attr_reader :pos
+  attr_reader :pos, :considered_positions
+  attr_writer :root_node
 
   def initialize(pos)
     @pos = pos
-    @board = Array.new(8) { Array.new(8, '_') }
-    @considered_positions = []
-
+    # @board = Array.new(8) { Array.new(8, '_') }
+    @board = KnightPathFinder.initialize_board
+    @considered_positions = [pos]
+    @root_node = PolyTreeNode.new(self.pos)
   end
 
+  def self.initialize_board
+    board = Array.new(8) { Array.new(8, '_') }
+    for i in (0...8)
+      for j in (0...8)
+        board[i][j] = '■' if i.even? && j.even?
+        board[i][j] = '□' if i.odd? && j.even?
+        board[i][j] = '■' if  i.odd? && j.odd?
+        board[i][j] = '□' if i.even? && j.odd?
+      end
+    end
+    board
+
+  end
 
   def new_move_positions(pos)
     valids = KnightPathFinder.valid_moves(pos)
-    @considered_positions << pos
-    valids.reject{ |pos| @considered_positions.include?(pos) }
+    valids.reject!{ |pos| @considered_positions.include?(pos) }
     @considered_positions += valids
-    return valids
+    valids
   end
 
-  # def render
-  #   print " "
-  #   (0..7).each do |col|
-  #     print col.to_s + " "
-  #   end
-  #   puts
+  def render_path(path_list, destination)
+    path_list.each.with_index { |pos, i| @board[pos[0]][pos[1]] = i+1 }
+    @board[destination[0]][destination[1]] = "X"
 
-  #   (0..7).each do |row|
-  #     print row.to_s + " "
-  #     (0...@board.length).each do |row|
-        
-  #     end
-
-  #     puts
-  #   end
-
-  # end
-
-  def render
     print "  "
     (0..7).each do |col|
       print col.to_s + " "
@@ -82,26 +80,29 @@ class KnightPathFinder
       puts i.to_s + " " + row.join(" ")
     end
   end
-  
-  
-  def build_move_tree(target_position) 
-    root_node = PolyTreeNode.new(self.pos) 
-    queue = [root_node]
+
+  def get_path(target_position)
+
+    queue = [@root_node]
     until queue.empty?
       curr_node = queue.shift
       if curr_node.value == target_position
-        self.render
+        self.render_path(KnightPathFinder.get_path(curr_node), target_position)
         return KnightPathFinder.get_path(curr_node)
       else
-        # debugger
-        possible_moves = new_move_positions(curr_node.value) #
-        possible_moves.each{ |move| curr_node.add_child(PolyTreeNode.new(move)) }
-        curr_node.children.each { |child| queue << child }
-
-
+        curr_node.children.each { |child| queue << child}
       end
     end
-    queue
+  end
+
+  def build_move_tree
+    queue = [@root_node]
+    until queue.empty?
+      curr_node = queue.shift
+      possible_moves = new_move_positions(curr_node.value)
+      possible_moves.each{ |move| curr_node.add_child(PolyTreeNode.new(move))}
+      curr_node.children.each { |child| queue << child }
+    end
   end
 
   private
