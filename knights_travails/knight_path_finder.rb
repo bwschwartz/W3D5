@@ -2,14 +2,14 @@ class KnightPathFinder
 
   def self.valid_moves(pos)
     moves = 
-    [[1, 2], 
-    [-1, 2], 
-    [-1, -2], 
-    [1, -2], 
-    [2, 1], 
-    [2, -1], 
-    [-2, -1], 
-    [-2, 1]]
+    [[1, 2], = 3
+    [-1, 2],  = 1
+    [-1, -2], = -3
+    [1, -2], = 1
+    [2, 1], = 3
+    [2, -1],  = 3
+    [-2, -1], = -3 
+    [-2, 1]] = 
 
     valid_pos = []
 
@@ -20,6 +20,13 @@ class KnightPathFinder
 
     valid_pos
   end
+
+  def self.valid_moves(pos)
+    valid_pos = []
+    pos.each |i
+  end
+
+
 
 
 
