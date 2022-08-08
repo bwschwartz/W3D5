@@ -33,11 +33,19 @@ class KnightPathFinder
   def initialize(pos)
     @pos = pos
     @board = Array.new(8) { Array.new(8) }
+    @considered_positions = []
 
   end
 
   def get_position
 
+  end
+
+  def new_move_positions(pos)
+    valids = KnightPathFinder.valid_moves(pos)
+    valids.reject{ |pos| @considered_positions.include?(pos) }
+    @considered_positions += valids 
+    return valids
   end
 
   private
